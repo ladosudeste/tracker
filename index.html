@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Tracker - Fun Hacking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 80, 0, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 80, 0, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #003300;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #33ff33;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .hacker-text {
+            background-color: #001100;
+            border: 1px solid #003300;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .glitch {
+            animation: glitch 1s linear infinite;
+        }
+        
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 0 0 #ff0000, -2px 0 0 #0000ff;
+            }
+            50% {
+                text-shadow: -2px 0 0 #ff0000, 2px 0 0 #0000ff;
+            }
+            100% {
+                text-shadow: 2px 0 0 #ff0000, -2px 0 0 #0000ff;
+            }
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #001100;
+            border: 1px solid #003300;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+        
+        .panel h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #003300;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel h2 i {
+            color: #33ff33;
+        }
+        
+        .ip-display {
+            font-size: 2rem;
+            text-align: center;
+            padding: 20px;
+            background-color: #000800;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            border: 1px solid #004400;
+        }
+        
+        .btn {
+            background-color: #003300;
+            color: #00ff00;
+            border: 1px solid #00aa00;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            background-color: #004400;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            background-color: #000800;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #00aa00;
+        }
+        
+        .info-label {
+            color: #33ff33;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            word-break: break-word;
+        }
+        
+        .map-container {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #003300;
+            margin-top: 10px;
+        }
+        
+        #street-view {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .loading i {
+            animation: spin 1.5s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            color: #ff3333;
+            background-color: #110000;
+            border: 1px solid #550000;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #003300;
+            color: #33aa33;
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .blink {
+            animation: blink 1s step-start infinite;
+        }
+        
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .ip-display {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="glitch">IP TRACKER <span class="blink">_</span></h1>
+            <div class="subtitle">Rastreamento de IP com Visualização de Localização</div>
+            <div class="hacker-text">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <span class="pulse">AVISO: Esta ferramenta é apenas para fins educacionais. O rastreamento de IP sem consentimento pode violar leis de privacidade.</span>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="panel">
+                <h2><i class="fas fa-satellite-dish"></i> SEU IP</h2>
+                <div class="ip-display" id="ip-display">
+                    Carregando seu IP...
+                </div>
+                <div class="hacker-text">
+                    <i class="fas fa-info-circle"></i> 
+                    Seu endereço IP é como seu endereço digital na internet. Clique no botão abaixo para obter informações detalhadas sobre sua localização e conexão.
+                </div>
+                <button class="btn" id="track-btn">
+                    <i class="fas fa-search"></i> RASTREAR MEU IP
+                </button>
+                
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner"></i> Analisando dados do IP, coletando informações de localização...
+                </div>
+                
+                <div class="error" id="error">
+                    Ocorreu um erro ao obter os dados do IP. Por favor, tente novamente.
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2><i class="fas fa-map-marked-alt"></i> VISUALIZAÇÃO DA LOCALIZAÇÃO</h2>
+                <div class="map-container">
+                    <div id="street-view">
+                        <div style="display: flex; justify-content: center; align-items: center; height: 100%; background-color: #000800; color: #33ff33; flex-direction: column; padding: 20px; text-align: center;">
+                            <i class="fas fa-globe-americas" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                            <p>O Street View será exibido aqui após o rastreamento do IP</p>
+                            <p class="pulse" style="margin-top: 10px; font-size: 0.9rem;">A visualização pode ser aproximada com base nos dados de geolocalização</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2><i class="fas fa-network-wired"></i> INFORMAÇÕES DETALHADAS DO IP</h2>
+            <div class="info-grid" id="info-grid">
+                <div class="info-item">
+                    <div class="info-label">País</div>
+                    <div class="info-value" id="country">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Região</div>
+                    <div class="info-value" id="region">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Cidade</div>
+                    <div class="info-value" id="city">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">CEP</div>
+                    <div class="info-value" id="zip">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Fuso Horário</div>
+                    <div class="info-value" id="timezone">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Provedor de Internet</div>
+                    <div class="info-value" id="isp">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Organização</div>
+                    <div class="info-value" id="org">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Coordenadas</div>
+                    <div class="info-value" id="coordinates">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>IP Tracker - Ferramenta educacional de rastreamento de IP | Desenvolvido para fins de demonstração</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                <i class="fas fa-shield-alt"></i> 
+                Esta página não armazena nenhum dado coletado. Todas as informações são processadas em tempo real.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Elementos da página
+        const ipDisplay = document.getElementById('ip-display');
+        const trackBtn = document.getElementById('track-btn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const streetViewContainer = document.getElementById('street-view');
+        
+        // Elementos de informações
+        const countryElement = document.getElementById('country');
+        const regionElement = document.getElementById('region');
+        const cityElement = document.getElementById('city');
+        const zipElement = document.getElementById('zip');
+        const timezoneElement = document.getElementById('timezone');
+        const ispElement = document.getElementById('isp');
+        const orgElement = document.getElementById('org');
+        const coordinatesElement = document.getElementById('coordinates');
+        
+        // Variáveis globais
+        let userIp = '';
+        let map = null;
+        let panorama = null;
+        
+        // Inicialização - Obtém o IP do usuário
+        document.addEventListener('DOMContentLoaded', function() {
+            getClientIp();
+        });
+        
+        // Função para obter o IP do cliente
+        async function getClientIp() {
+            try {
+                // Primeiro tentamos obter o IP através de um serviço externo
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                userIp = data.ip;
+                ipDisplay.textContent = userIp;
+            } catch (err) {
+                // Se falhar, usamos um IP de fallback para demonstração
+                userIp = "189.6.228.34"; // IP de exemplo (São Paulo, Brasil)
+                ipDisplay.textContent = `${userIp} (IP de demonstração)`;
+                console.log("Usando IP de demonstração devido a erro na API:", err);
+            }
+        }
+        
+        // Event listener para o botão de rastreamento
+        trackBtn.addEventListener('click', function() {
+            trackIp(userIp);
+        });
+        
+        // Função principal para rastrear o IP
+        async function trackIp(ip) {
+            // Mostra o indicador de carregamento
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            trackBtn.disabled = true;
+            
+            try {
+                // Usamos ip-api.com para obter informações de geolocalização
+                const response = await fetch(`https://ipapi.co/${ip}/json/`);
+                const data = await response.json();
+                
+                // Verifica se a API retornou um erro
+                if (data.error) {
+                    throw new Error(data.reason || "Erro ao obter dados do IP");
+                }
+                
+                // Atualiza a interface com os dados obtidos
+                updateIpInfo(data);
+                
+                // Mostra o Street View se tiver coordenadas
+                if (data.latitude && data.longitude) {
+                    showStreetView(data.latitude, data.longitude);
+                } else {
+                    // Coordenadas de fallback (São Paulo)
+                    showStreetView(-23.5505, -46.6333);
+                }
+                
+            } catch (err) {
+                console.error("Erro ao rastrear IP:", err);
+                error.style.display = 'block';
+                
+                // Dados de fallback para demonstração
+                const fallbackData = {
+                    country_name: "Brasil",
+                    region: "São Paulo",
+                    city: "São Paulo",
+                    postal: "01000-000",
+                    timezone: "America/Sao_Paulo",
+                    org: "Vivo",
+                    asn: "AS27699",
+                    latitude: -23.5505,
+                    longitude: -46.6333
+                };
+                
+                updateIpInfo(fallbackData);
+                showStreetView(fallbackData.latitude, fallbackData.longitude);
+            } finally {
+                // Esconde o indicador de carregamento
+                loading.style.display = 'none';
+                trackBtn.disabled = false;
+            }
+        }
+        
+        // Função para atualizar as informações do IP na interface
+        function updateIpInfo(data) {
+            countryElement.textContent = data.country_name || '--';
+            regionElement.textContent = data.region || '--';
+            cityElement.textContent = data.city || '--';
+            zipElement.textContent = data.postal || '--';
+            timezoneElement.textContent = data.timezone || '--';
+            ispElement.textContent = data.org || '--';
+            orgElement.textContent = data.asn ? `AS${data.asn}` : '--';
+            
+            if (data.latitude && data.longitude) {
+                coordinatesElement.textContent = `${data.latitude}, ${data.longitude}`;
+            } else {
+                coordinatesElement.textContent = '--';
+            }
+        }
+        
+        // Função para mostrar o Street View
+        function showStreetView(lat, lng) {
+            // Limpa o container do Street View
+            streetViewContainer.innerHTML = '';
+            
+            // Cria um iframe com o Google Street View
+            const streetViewUrl = `https://www.google.com/maps/embed/v1/streetview?key=AIzaSyCw8BOQqEoBlTft9E0ZaqAapR1rNPtSvUc&location=${lat},${lng}&heading=210&pitch=10&fov=90`;
+            
+            const iframe = document.createElement('iframe');
+            iframe.width = '100%';
+            iframe.height = '100%';
+            iframe.frameBorder = 0;
+            iframe.style.border = 'none';
+            iframe.allowFullscreen = true;
+            iframe.src = streetViewUrl;
+            iframe.title = 'Google Street View';
+            
+            streetViewContainer.appendChild(iframe);
+            
+            // Adiciona uma mensagem informativa
+            const infoMsg = document.createElement('div');
+            infoMsg.style.cssText = 'position: absolute; bottom: 10px; left: 10px; background-color: rgba(0, 20, 0, 0.8); color: #33ff33; padding: 8px 12px; border-radius: 4px; font-size: 0.8rem; border-left: 3px solid #00aa00;';
+            infoMsg.innerHTML = '<i class="fas fa-info-circle"></i> Visualização aproximada da localização do IP';
+            streetViewContainer.style.position = 'relative';
+            streetViewContainer.appendChild(infoMsg);
+        }
+        
+        // Efeitos visuais para a interface "hacker"
+        function addHackerEffects() {
+            const glitchText = document.querySelector('.glitch');
+            
+            // Efeito de glitch intermitente
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    glitchText.classList.add('glitch');
+                    setTimeout(() => {
+                        glitchText.classList.remove('glitch');
+                    }, 200);
+                }
+            }, 3000);
+            
+            // Efeito de digitação para o título
+            const subtitle = document.querySelector('.subtitle');
+            const originalText = subtitle.textContent;
+            subtitle.textContent = '';
+            let i = 0;
+            
+            function typeWriter() {
+                if (i < originalText.length) {
+                    subtitle.textContent += originalText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 50);
+                }
+            }
+            
+            // Inicia o efeito de digitação após um breve delay
+            setTimeout(typeWriter, 1000);
+        }
+        
+        // Inicia os efeitos visuais
+        addHackerEffects();
+    </script>
+</body>
+</html>
